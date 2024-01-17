@@ -2,6 +2,7 @@
 
 **Many thanks to the folks at @datreeio for starting this project! ❤️**
 
+[![Discord](https://discordapp.com/api/guilds/1148334798524383292/widget.png?style=banner2)](https://discord.gg/9qSvVjpSgB)
 ---
 # CRDs Catalog
 
