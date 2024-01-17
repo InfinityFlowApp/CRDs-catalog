@@ -1,3 +1,8 @@
+**📣 Due to the lack of responsiveness in many pull requests, we have created this fork that we will be maintaining at https://github.com/InfinityFlowApp/CRDs-catalog. It'll be kept in sync with the `datreeio/CRDs-catalog` upstream.**
+
+**Many thanks to the folks at @datreeio for starting this project! ❤️**
+
+---
 # CRDs Catalog
 
 This repository aggregates hundreds of popular Kubernetes CRDs (`CustomResourceDefinition`) in JSON schema format. These schemas can be used by various tools such as [Datree](https://github.com/datreeio/datree), [Kubeconform](https://github.com/yannh/kubeconform) and [Kubeval](https://github.com/instrumenta/kubeval), as an alternative to `kubectl --dry-run`, to perform validation on custom (and native) Kubernetes resources.  
@@ -11,7 +16,7 @@ datree test [MANIFEST]
 ```
 ### Kubeconform
 ```
-kubeconform -schema-location default -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' [MANIFEST]
+kubeconform -schema-location default -schema-location 'https://raw.githubusercontent.com/InfinityFlowApp/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' [MANIFEST]
 ```
 ### kubeval
 ```
@@ -24,7 +29,7 @@ Only supported with the CRD Extractor
 
 ## CRD Extractor
 
-This repository also contains a handy utility that extracts all CRDs from a cluster and converts them to JSON schema.
+This repository also contains a [handy utility](Utilities/crd-extractor.sh) that extracts all CRDs from a cluster and converts them to JSON schema.
 
 ### What does this utility do?
 1. Checks that the prerequisites are installed.
@@ -43,7 +48,7 @@ The following programs are required to be installed on the machine running this 
 
 ### Usage
 To use the CRD Extractor:  
-1. Download the [latest release](https://github.com/datreeio/CRDs-catalog/releases/latest/download/crd-extractor.zip) from this repository.
+1. Download the [latest release](https://github.com/InfinityFlowApp/CRDs-catalog/releases/latest/download/crd-extractor.zip) from this repository.
 2. Extract, and run the utility:
 ```
 ./crd-extractor.sh
