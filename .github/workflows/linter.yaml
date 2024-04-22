@@ -1,5 +1,9 @@
 name: Yaml Lint
 on: [push] 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   lintAllTheThings:
     runs-on: ubuntu-latest
