@@ -1,4 +1,4 @@
-**📣 Due to the lack of responsiveness in many pull requests, we have created this fork that we will be maintaining at https://github.com/InfinityFlowApp/CRDs-catalog. It'll be kept in sync with the `datreeio/CRDs-catalog` upstream.**
+**📣 It seems [@datreeio has shutdown](https://github.com/datreeio/CRDs-catalog/issues/310#issuecomment-2112835941). We have created this fork that we are committed to maintaining for the long term.**
 
 **Many thanks to the folks at @datreeio for starting this project! ❤️**
 
