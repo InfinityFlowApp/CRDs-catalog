@@ -19,6 +19,7 @@
           "description": "AMIFamily is the AMI family that instances use.",
           "enum": [
             "AL2",
+            "AL2023",
             "Bottlerocket",
             "Ubuntu",
             "Custom",
@@ -79,6 +80,10 @@
               "rule": "!self.all(x, has(x.owner) && has(x.tags))"
             }
           ]
+        },
+        "associatePublicIPAddress": {
+          "description": "AssociatePublicIPAddress controls if public IP addresses\nare assigned to instances that are launched with the nodeclass.",
+          "type": "boolean"
         },
         "blockDeviceMappings": {
           "description": "BlockDeviceMappings to be applied to provisioned nodes.",
@@ -378,16 +383,20 @@
               "rule": "self.all(k, !k.startsWith('kubernetes.io/cluster') )"
             },
             {
-              "message": "tag contains a restricted tag matching karpenter.sh/provisioner-name",
-              "rule": "self.all(k, k != 'karpenter.sh/provisioner-name')"
-            },
-            {
               "message": "tag contains a restricted tag matching karpenter.sh/nodepool",
               "rule": "self.all(k, k != 'karpenter.sh/nodepool')"
             },
             {
               "message": "tag contains a restricted tag matching karpenter.sh/managed-by",
               "rule": "self.all(k, k !='karpenter.sh/managed-by')"
+            },
+            {
+              "message": "tag contains a restricted tag matching karpenter.sh/nodeclaim",
+              "rule": "self.all(k, k !='karpenter.sh/nodeclaim')"
+            },
+            {
+              "message": "tag contains a restricted tag matching karpenter.k8s.aws/ec2nodeclass",
+              "rule": "self.all(k, k !='karpenter.k8s.aws/ec2nodeclass')"
             }
           ]
         },
@@ -430,11 +439,17 @@
               "requirements": {
                 "description": "Requirements of the AMI to be utilized on an instance type",
                 "items": {
-                  "description": "A node selector requirement is a selector that contains values, a key, and an operator\nthat relates the key and values.",
+                  "description": "A node selector requirement with min values is a selector that contains values, a key, an operator that relates the key and values\nand minValues that represent the requirement to have at least that many values.",
                   "properties": {
                     "key": {
                       "description": "The label key that the selector applies to.",
                       "type": "string"
+                    },
+                    "minValues": {
+                      "description": "This field is ALPHA and can be dropped or replaced at any time\nMinValues is the minimum number of unique values required to define the flexibility of the specific requirement.",
+                      "maximum": 50,
+                      "minimum": 1,
+                      "type": "integer"
                     },
                     "operator": {
                       "description": "Represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
