@@ -61,8 +61,7 @@
                 ]
               }
             },
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "maxItems": 30,
           "type": "array",
@@ -74,10 +73,6 @@
             {
               "message": "'id' is mutually exclusive, cannot be set with a combination of other fields in amiSelectorTerms",
               "rule": "!self.all(x, has(x.id) && (has(x.tags) || has(x.name) || has(x.owner)))"
-            },
-            {
-              "message": "'owner' cannot be set with 'tags'",
-              "rule": "!self.all(x, has(x.owner) && has(x.tags))"
             }
           ]
         },
@@ -162,16 +157,14 @@
                     "message": "snapshotID or volumeSize must be defined",
                     "rule": "has(self.snapshotID) || has(self.volumeSize)"
                   }
-                ],
-                "additionalProperties": false
+                ]
               },
               "rootVolume": {
                 "description": "RootVolume is a flag indicating if this device is mounted as kubelet root dir. You can\nconfigure at most one root volume in BlockDeviceMappings.",
                 "type": "boolean"
               }
             },
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "maxItems": 50,
           "type": "array",
@@ -252,8 +245,7 @@
               "type": "string"
             }
           },
-          "type": "object",
-          "additionalProperties": false
+          "type": "object"
         },
         "role": {
           "description": "Role is the AWS identity that nodes use. This field is immutable.\nThis field is mutally exclusive from instanceProfile.\nMarking this field as immutable avoids concerns around terminating managed instance profiles from running instances.\nThis field may be made mutable in the future, assuming the correct garbage collection and drift handling is implemented\nfor the old instance profiles on an update.",
@@ -298,8 +290,7 @@
                 ]
               }
             },
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "maxItems": 30,
           "type": "array",
@@ -347,8 +338,7 @@
                 ]
               }
             },
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "maxItems": 30,
           "type": "array",
@@ -407,7 +397,6 @@
       },
       "required": [
         "amiFamily",
-        "role",
         "securityGroupSelectorTerms",
         "subnetSelectorTerms"
       ],
@@ -416,9 +405,16 @@
         {
           "message": "amiSelectorTerms is required when amiFamily == 'Custom'",
           "rule": "self.amiFamily == 'Custom' ? self.amiSelectorTerms.size() != 0 : true"
+        },
+        {
+          "message": "must specify exactly one of ['role', 'instanceProfile']",
+          "rule": "(has(self.role) && !has(self.instanceProfile)) || (!has(self.role) && has(self.instanceProfile))"
+        },
+        {
+          "message": "changing from 'instanceProfile' to 'role' is not supported. You must delete and recreate this node class if you want to change this.",
+          "rule": "(has(oldSelf.role) && has(self.role)) || (has(oldSelf.instanceProfile) && has(self.instanceProfile))"
         }
-      ],
-      "additionalProperties": false
+      ]
     },
     "status": {
       "description": "EC2NodeClassStatus contains the resolved state of the EC2NodeClass",
@@ -467,8 +463,7 @@
                     "key",
                     "operator"
                   ],
-                  "type": "object",
-                  "additionalProperties": false
+                  "type": "object"
                 },
                 "type": "array"
               }
@@ -477,8 +472,7 @@
               "id",
               "requirements"
             ],
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "type": "array"
         },
@@ -503,8 +497,7 @@
             "required": [
               "id"
             ],
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "type": "array"
         },
@@ -526,14 +519,12 @@
               "id",
               "zone"
             ],
-            "type": "object",
-            "additionalProperties": false
+            "type": "object"
           },
           "type": "array"
         }
       },
-      "type": "object",
-      "additionalProperties": false
+      "type": "object"
     }
   },
   "type": "object"
