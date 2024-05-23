@@ -19,6 +19,7 @@
           "description": "AMIFamily is the AMI family that instances use.",
           "enum": [
             "AL2",
+            "AL2023",
             "Bottlerocket",
             "Ubuntu",
             "Custom",
@@ -73,12 +74,12 @@
             {
               "message": "'id' is mutually exclusive, cannot be set with a combination of other fields in amiSelectorTerms",
               "rule": "!self.all(x, has(x.id) && (has(x.tags) || has(x.name) || has(x.owner)))"
-            },
-            {
-              "message": "'owner' cannot be set with 'tags'",
-              "rule": "!self.all(x, has(x.owner) && has(x.tags))"
             }
           ]
+        },
+        "associatePublicIPAddress": {
+          "description": "AssociatePublicIPAddress controls if public IP addresses are assigned to instances that are launched with the nodeclass.",
+          "type": "boolean"
         },
         "blockDeviceMappings": {
           "description": "BlockDeviceMappings to be applied to provisioned nodes.",
@@ -209,7 +210,7 @@
             "httpPutResponseHopLimit": 2,
             "httpTokens": "required"
           },
-          "description": "MetadataOptions for the generated launch template of provisioned nodes.\n\n\nThis specifies the exposure of the Instance Metadata Service to\nprovisioned EC2 nodes. For more information,\nsee Instance Metadata and User Data (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html)\nin the Amazon Elastic Compute Cloud User Guide.\n\n\nRefer to recommended, security best practices\n(https://aws.github.io/aws-eks-best-practices/security/docs/iam/#restrict-access-to-the-instance-profile-assigned-to-the-worker-node)\nfor limiting exposure of Instance Metadata and User Data to pods.\nIf omitted, defaults to httpEndpoint enabled, with httpProtocolIPv6\ndisabled, with httpPutResponseLimit of 2, and with httpTokens\nrequired.",
+          "description": "MetadataOptions for the generated launch template of provisioned nodes.\n\n\nThis specifies the exposure of the Instance Metadata Service to\nprovisioned EC2 nodes. For more information,\nsee Instance Metadata and User Data\n(https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html)\nin the Amazon Elastic Compute Cloud User Guide.\n\n\nRefer to recommended, security best practices\n(https://aws.github.io/aws-eks-best-practices/security/docs/iam/#restrict-access-to-the-instance-profile-assigned-to-the-worker-node)\nfor limiting exposure of Instance Metadata and User Data to pods.\nIf omitted, defaults to httpEndpoint enabled, with httpProtocolIPv6\ndisabled, with httpPutResponseLimit of 2, and with httpTokens\nrequired.",
           "properties": {
             "httpEndpoint": {
               "default": "enabled",
@@ -251,7 +252,7 @@
           "additionalProperties": false
         },
         "role": {
-          "description": "Role is the AWS identity that nodes use. This field is immutable.\nThis field is mutally exclusive from instanceProfile.\nMarking this field as immutable avoids concerns around terminating managed instance profiles from running instances.\nThis field may be made mutable in the future, assuming the correct garbage collection and drift handling is implemented\nfor the old instance profiles on an update.",
+          "description": "Role is the AWS identity that nodes use. This field is immutable.\nThis field is mutually exclusive from instanceProfile.\nMarking this field as immutable avoids concerns around terminating managed instance profiles from running instances.\nThis field may be made mutable in the future, assuming the correct garbage collection and drift handling is implemented\nfor the old instance profiles on an update.",
           "type": "string",
           "x-kubernetes-validations": [
             {
@@ -378,16 +379,20 @@
               "rule": "self.all(k, !k.startsWith('kubernetes.io/cluster') )"
             },
             {
-              "message": "tag contains a restricted tag matching karpenter.sh/provisioner-name",
-              "rule": "self.all(k, k != 'karpenter.sh/provisioner-name')"
-            },
-            {
               "message": "tag contains a restricted tag matching karpenter.sh/nodepool",
               "rule": "self.all(k, k != 'karpenter.sh/nodepool')"
             },
             {
               "message": "tag contains a restricted tag matching karpenter.sh/managed-by",
               "rule": "self.all(k, k !='karpenter.sh/managed-by')"
+            },
+            {
+              "message": "tag contains a restricted tag matching karpenter.sh/nodeclaim",
+              "rule": "self.all(k, k !='karpenter.sh/nodeclaim')"
+            },
+            {
+              "message": "tag contains a restricted tag matching karpenter.k8s.aws/ec2nodeclass",
+              "rule": "self.all(k, k !='karpenter.k8s.aws/ec2nodeclass')"
             }
           ]
         },
@@ -398,7 +403,6 @@
       },
       "required": [
         "amiFamily",
-        "role",
         "securityGroupSelectorTerms",
         "subnetSelectorTerms"
       ],
@@ -407,6 +411,14 @@
         {
           "message": "amiSelectorTerms is required when amiFamily == 'Custom'",
           "rule": "self.amiFamily == 'Custom' ? self.amiSelectorTerms.size() != 0 : true"
+        },
+        {
+          "message": "must specify exactly one of ['role', 'instanceProfile']",
+          "rule": "(has(self.role) && !has(self.instanceProfile)) || (!has(self.role) && has(self.instanceProfile))"
+        },
+        {
+          "message": "changing from 'instanceProfile' to 'role' is not supported. You must delete and recreate this node class if you want to change this.",
+          "rule": "(has(oldSelf.role) && has(self.role)) || (has(oldSelf.instanceProfile) && has(self.instanceProfile))"
         }
       ],
       "additionalProperties": false
@@ -430,11 +442,17 @@
               "requirements": {
                 "description": "Requirements of the AMI to be utilized on an instance type",
                 "items": {
-                  "description": "A node selector requirement is a selector that contains values, a key, and an operator\nthat relates the key and values.",
+                  "description": "A node selector requirement with min values is a selector that contains values, a key, an operator that relates the key and values\nand minValues that represent the requirement to have at least that many values.",
                   "properties": {
                     "key": {
                       "description": "The label key that the selector applies to.",
                       "type": "string"
+                    },
+                    "minValues": {
+                      "description": "This field is ALPHA and can be dropped or replaced at any time\nMinValues is the minimum number of unique values required to define the flexibility of the specific requirement.",
+                      "maximum": 50,
+                      "minimum": 1,
+                      "type": "integer"
                     },
                     "operator": {
                       "description": "Represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
