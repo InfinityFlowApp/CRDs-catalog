@@ -52,7 +52,8 @@
                 "required": [
                   "nodes"
                 ],
-                "type": "object"
+                "type": "object",
+                "additionalProperties": false
               },
               "maxItems": 50,
               "type": "array",
@@ -94,7 +95,8 @@
               "message": "consolidateAfter must be specified with consolidationPolicy=WhenEmpty",
               "rule": "self.consolidationPolicy == 'WhenEmpty' ? has(self.consolidateAfter) : true"
             }
-          ]
+          ],
+          "additionalProperties": false
         },
         "limits": {
           "additionalProperties": {
@@ -126,13 +128,13 @@
                 },
                 "labels": {
                   "additionalProperties": {
-                    "type": "string",
                     "maxLength": 63,
-                    "pattern": "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$"
+                    "pattern": "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$",
+                    "type": "string"
                   },
                   "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects. May match selectors of replication controllers\nand services.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels",
-                  "type": "object",
                   "maxProperties": 100,
+                  "type": "object",
                   "x-kubernetes-validations": [
                     {
                       "message": "label domain \"kubernetes.io\" is restricted",
@@ -161,7 +163,8 @@
                   ]
                 }
               },
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false
             },
             "spec": {
               "description": "NodeClaimSpec describes the desired state of the NodeClaim",
@@ -182,8 +185,8 @@
                     },
                     "evictionHard": {
                       "additionalProperties": {
-                        "type": "string",
-                        "pattern": "^((\\d{1,2}(\\.\\d{1,2})?|100(\\.0{1,2})?)%||(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?)$"
+                        "pattern": "^((\\d{1,2}(\\.\\d{1,2})?|100(\\.0{1,2})?)%||(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?)$",
+                        "type": "string"
                       },
                       "description": "EvictionHard is the map of signal names to quantities that define hard eviction thresholds",
                       "type": "object",
@@ -201,8 +204,8 @@
                     },
                     "evictionSoft": {
                       "additionalProperties": {
-                        "type": "string",
-                        "pattern": "^((\\d{1,2}(\\.\\d{1,2})?|100(\\.0{1,2})?)%||(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?)$"
+                        "pattern": "^((\\d{1,2}(\\.\\d{1,2})?|100(\\.0{1,2})?)%||(\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\\+|-)?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))))?)$",
+                        "type": "string"
                       },
                       "description": "EvictionSoft is the map of signal names to quantities that define soft eviction thresholds",
                       "type": "object",
@@ -319,7 +322,8 @@
                       "message": "evictionSoftGracePeriod OwnerKey does not have a matching evictionSoft",
                       "rule": "has(self.evictionSoftGracePeriod) ? self.evictionSoftGracePeriod.all(e, (e in self.evictionSoft)):true"
                     }
-                  ]
+                  ],
+                  "additionalProperties": false
                 },
                 "nodeClassRef": {
                   "description": "NodeClassRef is a reference to an object that defines provider specific configuration",
@@ -340,18 +344,19 @@
                   "required": [
                     "name"
                   ],
-                  "type": "object"
+                  "type": "object",
+                  "additionalProperties": false
                 },
                 "requirements": {
                   "description": "Requirements are layered with GetLabels and applied to every node.",
                   "items": {
-                    "description": "A node selector requirement with min values is a selector that contains values, a key, an operator that relates the key and values\nand minValues that represent the requirement to have at least that many values",
+                    "description": "A node selector requirement with min values is a selector that contains values, a key, an operator that relates the key and values\nand minValues that represent the requirement to have at least that many values.",
                     "properties": {
                       "key": {
                         "description": "The label key that the selector applies to.",
-                        "type": "string",
                         "maxLength": 316,
                         "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$",
+                        "type": "string",
                         "x-kubernetes-validations": [
                           {
                             "message": "label domain \"kubernetes.io\" is restricted",
@@ -387,7 +392,6 @@
                       },
                       "operator": {
                         "description": "Represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                        "type": "string",
                         "enum": [
                           "In",
                           "NotIn",
@@ -395,23 +399,25 @@
                           "DoesNotExist",
                           "Gt",
                           "Lt"
-                        ]
+                        ],
+                        "type": "string"
                       },
                       "values": {
                         "description": "An array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. If the operator is Gt or Lt, the values\narray must have a single element, which will be interpreted as an integer.\nThis array is replaced during a strategic merge patch.",
                         "items": {
                           "type": "string"
                         },
-                        "type": "array",
                         "maxLength": 63,
-                        "pattern": "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$"
+                        "pattern": "^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$",
+                        "type": "array"
                       }
                     },
                     "required": [
                       "key",
                       "operator"
                     ],
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": false
                   },
                   "maxItems": 30,
                   "type": "array",
@@ -432,6 +438,7 @@
                 },
                 "resources": {
                   "description": "Resources models the resource requirements for the NodeClaim to launch",
+                  "maxProperties": 0,
                   "properties": {
                     "requests": {
                       "additionalProperties": {
@@ -451,7 +458,7 @@
                     }
                   },
                   "type": "object",
-                  "maxProperties": 0
+                  "additionalProperties": false
                 },
                 "startupTaints": {
                   "description": "StartupTaints are taints that are applied to nodes upon startup which are expected to be removed automatically\nwithin a short period of time, typically by a DaemonSet that tolerates the taint. These are commonly used by\ndaemonsets to allow initialization and enforce startup ordering.  StartupTaints are ignored for provisioning\npurposes in that pods are not required to tolerate a StartupTaint in order to have nodes provisioned for them.",
@@ -460,18 +467,18 @@
                     "properties": {
                       "effect": {
                         "description": "Required. The effect of the taint on pods\nthat do not tolerate the taint.\nValid effects are NoSchedule, PreferNoSchedule and NoExecute.",
-                        "type": "string",
                         "enum": [
                           "NoSchedule",
                           "PreferNoSchedule",
                           "NoExecute"
-                        ]
+                        ],
+                        "type": "string"
                       },
                       "key": {
                         "description": "Required. The taint key to be applied to a node.",
-                        "type": "string",
                         "minLength": 1,
-                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$"
+                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$",
+                        "type": "string"
                       },
                       "timeAdded": {
                         "description": "TimeAdded represents the time at which the taint was added.\nIt is only written for NoExecute taints.",
@@ -480,15 +487,16 @@
                       },
                       "value": {
                         "description": "The taint value corresponding to the taint key.",
-                        "type": "string",
-                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$"
+                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$",
+                        "type": "string"
                       }
                     },
                     "required": [
                       "effect",
                       "key"
                     ],
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": false
                   },
                   "type": "array"
                 },
@@ -499,18 +507,18 @@
                     "properties": {
                       "effect": {
                         "description": "Required. The effect of the taint on pods\nthat do not tolerate the taint.\nValid effects are NoSchedule, PreferNoSchedule and NoExecute.",
-                        "type": "string",
                         "enum": [
                           "NoSchedule",
                           "PreferNoSchedule",
                           "NoExecute"
-                        ]
+                        ],
+                        "type": "string"
                       },
                       "key": {
                         "description": "Required. The taint key to be applied to a node.",
-                        "type": "string",
                         "minLength": 1,
-                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$"
+                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$",
+                        "type": "string"
                       },
                       "timeAdded": {
                         "description": "TimeAdded represents the time at which the taint was added.\nIt is only written for NoExecute taints.",
@@ -519,15 +527,16 @@
                       },
                       "value": {
                         "description": "The taint value corresponding to the taint key.",
-                        "type": "string",
-                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$"
+                        "pattern": "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*(\\/))?([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$",
+                        "type": "string"
                       }
                     },
                     "required": [
                       "effect",
                       "key"
                     ],
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": false
                   },
                   "type": "array"
                 }
@@ -536,13 +545,15 @@
                 "nodeClassRef",
                 "requirements"
               ],
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false
             }
           },
           "required": [
             "spec"
           ],
-          "type": "object"
+          "type": "object",
+          "additionalProperties": false
         },
         "weight": {
           "description": "Weight is the priority given to the nodepool during scheduling. A higher\nnumerical weight indicates that this nodepool will be ordered\nahead of other nodepools with lower weights. A nodepool with no weight\nwill be treated as if it is a nodepool with a weight of 0.",
@@ -555,7 +566,8 @@
       "required": [
         "template"
       ],
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     },
     "status": {
       "description": "NodePoolStatus defines the observed state of NodePool",
@@ -577,7 +589,8 @@
           "type": "object"
         }
       },
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     }
   },
   "required": [
