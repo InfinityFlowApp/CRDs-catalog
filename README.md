@@ -1,8 +1,10 @@
-**📣 It seems [@datreeio has shutdown](https://github.com/datreeio/CRDs-catalog/issues/310#issuecomment-2112835941). We have created this fork that we are committed to maintaining for the long term.**
+**📣 @datreeio is still running their CRD catalog, (https://github.com/datreeio/CRDs-catalog).
+
+We are returing this reponin favor of the original.**
 
 **Many thanks to the folks at @datreeio for starting this project! ❤️**
 
-[![Discord](https://discordapp.com/api/guilds/1148334798524383292/widget.png?style=banner2)](https://discord.gg/9qSvVjpSgB)
+
 ---
 # CRDs Catalog
 
